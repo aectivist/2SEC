@@ -1,2 +1,3 @@
-/scripts/secrets
-/scripts/SettingsAPI_Disc.py
+scripts/2SEC/secrets
+scripts/2SEC/SettingsAPI_Disc.py
+scripts/2SEC/__pycache__
