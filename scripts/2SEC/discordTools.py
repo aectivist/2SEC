@@ -39,12 +39,17 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build 
 from googleapiclient.errors import HttpError
-JsonCreds = r"\secrets\credentials.json"
+JsonCreds = r"2SEC\scripts\2SEC\secrets\credentials.json"
 
 SCOPES = ["http://www.googleapis.com/auth/calendar"]
 
 def main():
     creds = None
+
+    if os.path.exists(JsonCreds):
+        print("it exists")
+    else:
+        print("ur cooked")
 
     if os.path.exists("token.json"):
         creds = Credentials.from_authorized_user_file("token.json")
