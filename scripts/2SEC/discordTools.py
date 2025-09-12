@@ -28,9 +28,8 @@ def get_weather(city, api_key):
         return f"HTTP error occurred: {e.response.status_code} - {e.response.text}"
     
 
-    
 
-
+"""GET SCHEDULE"""
 import datetime as dt
 import os.path
 
@@ -39,12 +38,21 @@ from google.oauth2.credentials import Credentials
 from google_auth_oauthlib.flow import InstalledAppFlow
 from googleapiclient.discovery import build 
 from googleapiclient.errors import HttpError
-JsonCreds = r"2SEC\scripts\2SEC\secrets\credentials.json"
 
-SCOPES = ["http://www.googleapis.com/auth/calendar"]
+import ollama
+JsonCreds = r"C:\Users\aecti\OneDrive\Desktop\Projects\AI\2SEC-DISCORD\2SEC\scripts\2SEC\secrets\credentials.json"
 
-def main():
+SCOPES = ["https://www.googleapis.com/auth/calendar"]
+
+Next10Schedules = []
+msgagent = [{
+    "role": "system",
+    "content":  "You are not an AI assistant. You are an analyst bot providing detailed explanation on the student's schedule. You will be given two main things: the date, which you must reference, and the summary, which provides an overview of the event taking place. You do not speak or ask questions unless you are attempting to summarize the information within the array provided. For every date and summary of the schedule given, attempt to provide an overall analysis of the information in order for the user to better understand their schedule. Additionally, a prompt will be provided. Try to align your summary with the next provided prompt."
+}]
+def get_weather(prompt):
+    global msgagent
     creds = None
+
 
     if os.path.exists(JsonCreds):
         print("it exists")
@@ -68,7 +76,7 @@ def main():
 
         now = dt.datetime.now().isoformat() + "Z"
 
-        event_result = service.events().list(calendarID="primary", timeMin=now, maxResults=10, singleEvents=True, orderBy="startTime") #gives 10 upcoming events
+        event_result = service.events().list(calendarId="primary",timeMin=now,maxResults=10, singleEvents=True,orderBy="startTime").execute()
 
         events = event_result.get("items", [])
 
@@ -77,11 +85,26 @@ def main():
             return
         
         for event in events:
-            start = event["start"].get("dateTime", event["Start"].get("date"))
-            print(start, event["Summary"])
+            start = event["start"].get("dateTime", event["start"].get("date"))
+            print(start, event["summary"])
+            appendable_event = start + " " + event["summary"]
+            Next10Schedules.append(appendable_event)
+        
             print()
+        msgagent.append({"role": "user",
+            "content": f'{Next10Schedules}' + f' PROMPT: {prompt}'})
+        print(msgagent)
+        response = ollama.chat(model="llama3.2:3b", messages=msgagent)
+        print(response['message']['content'])
+
+        return response['message']['content']
+        
+
+
     except HttpError as error:
         print("Error occurred!: ", error)
 
+
+
 if __name__ == "__main__":
-    main()
+    get_weather("Are there any tests")

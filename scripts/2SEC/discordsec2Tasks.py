@@ -39,6 +39,20 @@ tools_list = [ #Only to note but the weather model was only implemented for proo
                             "required": ["city"]
                         }
                     }
+                },
+                {
+                    "type": "function",
+                    "function": {
+                        "name": "get_weather",
+                        "description": "Get the current weather for a city.",
+                        "parameters": {
+                            "type": "object",
+                            "properties": {
+                                "city": {"type": "string", "description": "City name to check weather for"}
+                            },
+                            "required": ["city"]
+                        }
+                    }
                 }
             ]
 
@@ -73,7 +87,8 @@ def sec2_FUNCTION(prompt, messageX):
 
     # Map available functions
     available_functions = {
-    "get_weather": lambda **kwargs: get_weather(kwargs["city"], weather_api_key)
+    "get_weather": lambda **kwargs: get_weather(kwargs["city"], weather_api_key),
+    "get_weather": lambda **kwargs: get_weather(kwargs["prompt"])
     }
 
     if 'tool_calls' in response ['message']:
