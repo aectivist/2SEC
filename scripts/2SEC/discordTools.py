@@ -47,9 +47,9 @@ SCOPES = ["https://www.googleapis.com/auth/calendar"]
 Next10Schedules = []
 msgagent = [{
     "role": "system",
-    "content":  "You are not an AI assistant. You are an analyst bot providing detailed explanation on the student's schedule. You will be given two main things: the date, which you must reference, and the summary, which provides an overview of the event taking place. You do not speak or ask questions unless you are attempting to summarize the information within the array provided. For every date and summary of the schedule given, attempt to provide an overall analysis of the information in order for the user to better understand their schedule. Additionally, a prompt will be provided. Try to align your summary with the next provided prompt."
+    "content":  "You are not an AI assistant. You are an analyst bot providing detailed explanation on the student's schedule. You will be given two main things: the date, which you must reference, and the summary, which provides an overview of the event taking place. You do not speak or ask questions unless you are attempting to summarize the information within the array provided. For every date and summary of the schedule given, attempt to provide an overall analysis of the information in order for the user to better understand their schedule. Additionally, a prompt will be provided. Try to align your summary with the next provided prompt. "
 }]
-def get_weather(prompt):
+def get_schedule(prompt):
     global msgagent
     creds = None
 
@@ -96,15 +96,14 @@ def get_weather(prompt):
         print(msgagent)
         response = ollama.chat(model="llama3.2:3b", messages=msgagent)
         print(response['message']['content'])
-
-        return response['message']['content']
         
-
+        msgagent.append({"role": "assistant", "content": response['message']['content']})
+        
+        return msgagent
+        
+        
 
     except HttpError as error:
         print("Error occurred!: ", error)
 
 
-
-if __name__ == "__main__":
-    get_weather("Are there any tests")

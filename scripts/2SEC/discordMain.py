@@ -62,7 +62,7 @@ def run():
     
     @bot.command
     async def repo(ctx):
-        await ctx.message.author.send("https://chatgpt.com/c/68bd5033-b380-832b-ab04-6c4fc365354f")
+        await ctx.message.author.send("")
         discord.utils.get()
         
         #voice_client = guild.voice_client
